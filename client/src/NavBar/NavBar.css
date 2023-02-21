@@ -1,0 +1,22 @@
+.navbar-container {
+	display: flex;
+	background-color: chartreuse;
+	justify-content: space-between;
+	padding: 1rem;
+	align-items: center;
+}
+
+.login-button {
+	padding: 1rem;
+	border-width: 0px;
+	color: white;
+	height: 100%;
+	font-size: large;
+	font-weight: 700;
+}
+.logo {
+	font-size: large;
+	font-weight: 700;
+	color: white;
+    height: 100%;
+}

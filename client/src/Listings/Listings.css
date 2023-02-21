@@ -1,0 +1,22 @@
+.listing-container {
+	display: flex;
+	background-color: white;
+	align-items: center;
+}
+
+.listing-title {
+	flex-grow: 1;
+    color:#596672;
+	padding: 1rem;
+	font-size: large;
+	font-weight: 700;
+}
+
+.listing-button {
+	background-image: var(--gradient-green);
+	border-width: 0px;
+	padding: 1rem;
+	min-height: 55px;
+	color: white;
+	font-weight: 700;
+}

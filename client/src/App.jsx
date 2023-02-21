@@ -1,6 +1,19 @@
 import "./App.css";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import NavBar from "./NavBar/NavBarComponent";
+import SearchBar from "./Search/SearchBarComponent";
+import ListingContainer from "./ListingsContainer/ListingsContainerComponent";
+import {
+	collection,
+	getDocs,
+	getFirestore,
+	doc,
+	setDoc,
+	getDoc,
+} from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -17,25 +30,97 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
+const provider = new GoogleAuthProvider();
 const app = initializeApp(firebaseConfig);
+const firestore = getFirestore(app);
+const functions = getFunctions();
+const auth = getAuth();
+
+export function handlePostQuery(e) {
+	const postQuery = httpsCallable(functions, "postQuery");
+	const query = e.toLowerCase();
+	if (query !== null && query !== "") {
+		postQuery({ text: query }).then((result) => {
+			// Read result of the Cloud Function.
+			const data = result.data;
+			const success = data.text;
+			console.log(success, data);
+		});
+	}
+}
+
+export function handleGetQueriesNow() {
+	const postQuery = httpsCallable(functions, "getQueriesNow");
+	postQuery().catch((err) => {
+		console.log(err);
+	});
+}
 
 function App() {
-	const [data, setData] = useState(null);
+	const [isLoggedIn, setLogin] = useState(false);
+
+	function handleLogin() {
+		signInWithPopup(auth, provider)
+			.then(async (result) => {
+				try {
+					// This gives you a Google Access Token. You can use it to access the Google API.
+					const credential = GoogleAuthProvider.credentialFromResult(result);
+					const token = credential.accessToken;
+					// The signed-in user info.
+					const user = result.user;
+					// IdP data available using getAdditionalUserInfo(result)
+
+					const docRef = doc(firestore, "users", `${user.displayName}`);
+					const docSnap = await getDoc(docRef);
+
+					if (!docSnap.exists()) {
+						await setDoc(doc(firestore, "users", `${user.displayName}`), {
+							name: `${user.displayName}`,
+							email: `${user.email}`,
+							uid: `${user.uid}`,
+						});
+					}
+
+					setLogin(true);
+				} catch (err) {
+					console.log(err);
+				}
+			})
+			.catch((error) => {
+				// Handle Errors here.
+				// const errorCode = error.code;
+				// const errorMessage = error.message;
+				// // The email of the user's account used.
+				// const email = error.customData.email;
+				// // The AuthCredential type that was used.
+				// const credential = GoogleAuthProvider.credentialFromError(error);
+				// ...
+				console.log(error);
+			});
+	}
+
+	const [listings, setListings] = useState([]);
 
 	useEffect(() => {
-		axios
-			.put(
-				"https://us-central1-pricefinderpaget.cloudfunctions.net/helloWorld?search=bed"
-			)
-			.then((response) => {
-				console.log(response);
-				setData(response.data);
+		getDocs(collection(firestore, "queries"))
+			.then((querySnapshot) => {
+				const fetchedListings = [];
+				querySnapshot.forEach((doc) => {
+					fetchedListings.push(doc.data());
+				});
+				setListings(fetchedListings);
 			})
-			.catch((error) => console.log(error));
+			.catch((error) => {
+				console.error(error);
+			});
 	}, []);
 
 	return (
-		<div className='App'>{data ? <p>{data.title}</p> : <p>Loading...</p>}</div>
+		<main className='App'>
+			<NavBar handleLogin={handleLogin} isLoggedIn={isLoggedIn} />
+			<SearchBar handlePostQuery={handlePostQuery} />
+			<ListingContainer listings={listings} />
+		</main>
 	);
 }
 
