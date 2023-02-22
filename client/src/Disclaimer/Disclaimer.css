@@ -1,0 +1,18 @@
+.disclaimer-container {
+    padding: 1rem;
+}
+.disclaimer-paragraph {
+    color: rgb(248, 248, 248);
+    font-size: large;
+}
+
+.disclaimer-header {
+    color: white;
+    font-size: large;
+    font-weight: 700;
+}
+
+.disclaimer-body {
+    border: 1px solid #fff;
+    padding: 0.5rem;
+}

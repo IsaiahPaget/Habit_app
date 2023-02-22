@@ -8,12 +8,12 @@ function SearchBar() {
 			className='searchbar-container bg-gradient'
 			onSubmit={(e) => {
 				e.preventDefault();
-				handlePostQuery(e.target['search'].value);
+				handlePostQuery(e.target["search"].value);
 			}}
 		>
 			<input type='text' name='search' className='searchbar-input' />
 			<button type='submit' className='searchbar-button'>
-				O
+				<i className='fa-solid fa-magnifying-glass'></i>
 			</button>
 		</form>
 	);

@@ -16,6 +16,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import Disclaimer from "./Disclaimer/DisclaimerComponent";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -58,6 +59,7 @@ export function handleGetQueriesNow() {
 
 function App() {
 	const [isLoggedIn, setLogin] = useState(false);
+	const [user, setUser] = useState(null);
 
 	function handleLogin() {
 		signInWithPopup(auth, provider)
@@ -67,7 +69,7 @@ function App() {
 					const credential = GoogleAuthProvider.credentialFromResult(result);
 					const token = credential.accessToken;
 					// The signed-in user info.
-					const user = result.user;
+					setUser(result.user);
 					// IdP data available using getAdditionalUserInfo(result)
 
 					const docRef = doc(firestore, "users", `${user.displayName}`);
@@ -87,17 +89,23 @@ function App() {
 				}
 			})
 			.catch((error) => {
-				// Handle Errors here.
-				// const errorCode = error.code;
-				// const errorMessage = error.message;
-				// // The email of the user's account used.
-				// const email = error.customData.email;
-				// // The AuthCredential type that was used.
-				// const credential = GoogleAuthProvider.credentialFromError(error);
-				// ...
 				console.log(error);
 			});
 	}
+
+	function handleLogOut() {
+		auth.signOut().then(() => {
+			setLogin(false);
+		});
+	}
+
+	// Check if user is already signed in
+	auth.onAuthStateChanged((user) => {
+		if (user) {
+			setLogin(true);
+			setUser(user);
+		}
+	});
 
 	const [listings, setListings] = useState([]);
 
@@ -117,8 +125,14 @@ function App() {
 
 	return (
 		<main className='App'>
-			<NavBar handleLogin={handleLogin} isLoggedIn={isLoggedIn} />
+			<NavBar
+				handleLogin={handleLogin}
+				handleLogOut={handleLogOut}
+				isLoggedIn={isLoggedIn}
+				user={user}
+			/>
 			<SearchBar handlePostQuery={handlePostQuery} />
+			{!isLoggedIn ? <Disclaimer /> : null}
 			<ListingContainer listings={listings} />
 		</main>
 	);
