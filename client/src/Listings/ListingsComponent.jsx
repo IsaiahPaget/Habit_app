@@ -15,14 +15,11 @@ function Listings(props) {
 						className='listing-container'
 					>
 						<div className='listing-title'>{listing}</div>
-						{props.isLoggedIn ? null : (
+						{props.isLoggedIn ? (
 							<button className='listing-button'>
-								<i className='fa-solid fa-check'></i>
+								<i className='fa-solid fa-xmark'></i>
 							</button>
-						)}
-						<button className='listing-button'>
-							<i className='fa-solid fa-xmark'></i>
-						</button>
+						) : null }
 					</form>
 				);
 			})}

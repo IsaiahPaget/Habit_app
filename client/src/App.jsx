@@ -70,22 +70,16 @@ function App() {
 					// This gives you a Google Access Token. You can use it to access the Google API.
 					const credential = GoogleAuthProvider.credentialFromResult(result);
 					const token = credential.accessToken;
+
+					const userRef = result.user;
 					// The signed-in user info.
-					setUser(result.user);
 					// IdP data available using getAdditionalUserInfo(result)
 
-					const docRef = doc(firestore, "users", `${user.uid}`);
-					const docSnap = await getDoc(docRef);
-
-					if (!docSnap.exists()) {
-						await setDoc(doc(firestore, "users", `${user.uid}`), {
-							name: `${user.displayName}`,
-							email: `${user.email}`,
-							uid: `${user.uid}`,
-						});
-					}
-
-					setLogin(true);
+					await setDoc(doc(firestore, "users", userRef.uid), {
+						name: userRef.displayName,
+						email: userRef.email,
+						uid: userRef.uid,
+					});
 				} catch (err) {
 					console.log(err);
 				}
@@ -98,6 +92,7 @@ function App() {
 	function handleLogOut() {
 		auth.signOut().then(() => {
 			setLogin(false);
+			setUser(null);
 		});
 	}
 
@@ -117,7 +112,11 @@ function App() {
 			getDoc(docRef)
 				.then((doc) => {
 					if (doc.exists()) {
-						setListings(doc.data().subscriptions);
+						if (!doc.data().subscriptions) {
+							setListings([]);
+						} else {
+							setListings(doc.data().subscriptions);
+						}
 					}
 				})
 				.catch((err) => console.log(err));
@@ -142,8 +141,6 @@ function App() {
 		}
 	}, [isLoggedIn, user]);
 
-	console.log(user, isLoggedIn);
-
 	return (
 		<main className='App'>
 			<NavBar
@@ -152,7 +149,7 @@ function App() {
 				isLoggedIn={isLoggedIn}
 				user={user}
 			/>
-			<SearchBar handlePostQuery={handlePostQuery} />
+			{isLoggedIn ? <SearchBar handlePostQuery={handlePostQuery} /> : null}
 			{!isLoggedIn ? <Disclaimer /> : null}
 			<ListingContainer listings={listings} isLoggedIn={isLoggedIn} />
 		</main>
