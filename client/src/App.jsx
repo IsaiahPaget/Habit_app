@@ -41,20 +41,11 @@ export function handlePostQuery(e) {
 	const postQuery = httpsCallable(functions, "postQuery");
 	const query = e.toLowerCase();
 	if (query !== null && query !== "") {
-		postQuery({ text: query }).then((result) => {
+		postQuery({ text: query }).then(() => {
 			// Read result of the Cloud Function.
-			const data = result.data;
-			const success = data.text;
-			console.log(success, data);
+			window.location.reload();
 		});
 	}
-}
-
-export function handleGetQueriesNow() {
-	const postQuery = httpsCallable(functions, "getQueriesNow");
-	postQuery().catch((err) => {
-		console.log(err);
-	});
 }
 
 function App() {
@@ -72,11 +63,11 @@ function App() {
 					setUser(result.user);
 					// IdP data available using getAdditionalUserInfo(result)
 
-					const docRef = doc(firestore, "users", `${user.displayName}`);
+					const docRef = doc(firestore, "users", `${user.uid}`);
 					const docSnap = await getDoc(docRef);
 
 					if (!docSnap.exists()) {
-						await setDoc(doc(firestore, "users", `${user.displayName}`), {
+						await setDoc(doc(firestore, "users", `${user.uid}`), {
 							name: `${user.displayName}`,
 							email: `${user.email}`,
 							uid: `${user.uid}`,

@@ -4,7 +4,7 @@ import "./Listings.css";
 function Listings(props) {
 	return (
 		<section>
-            <header className="listing-header">Most Watched</header>
+            <header className="listing-header">Most Subscribed</header>
 			{props.listings.map((listing) => {
 				return (
 					<div className='listing-container'>

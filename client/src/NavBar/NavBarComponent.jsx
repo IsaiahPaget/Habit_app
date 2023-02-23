@@ -1,5 +1,4 @@
 import React from "react";
-import { handleGetQueriesNow } from "../App";
 import "./NavBar.css";
 function NavBar(props) {
 	return (
