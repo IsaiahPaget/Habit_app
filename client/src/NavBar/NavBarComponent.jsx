@@ -5,7 +5,6 @@ function NavBar(props) {
 		<div className='navbar-container bg-gradient'>
 			<a className='logo'>
 				<i className='fa-solid fa-compass'></i>
-				Price Compass
 			</a>
 			{!props.isLoggedIn ? (
 				<a onClick={props.handleLogin} className='login-button'>

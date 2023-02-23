@@ -48,6 +48,17 @@ export function handlePostQuery(e) {
 	}
 }
 
+export function handleRemoveQuery(e) {
+	const removeQuery = httpsCallable(functions, "removeQuery");
+	const query = e.toLowerCase();
+	if (query !== null && query !== "") {
+		removeQuery({ text: query }).then(() => {
+			// Read result of the Cloud Function.
+			window.location.reload();
+		});
+	}
+}
+
 function App() {
 	const [isLoggedIn, setLogin] = useState(false);
 	const [user, setUser] = useState(null);
@@ -101,18 +112,37 @@ function App() {
 	const [listings, setListings] = useState([]);
 
 	useEffect(() => {
-		getDocs(collection(firestore, "queries"))
-			.then((querySnapshot) => {
-				const fetchedListings = [];
-				querySnapshot.forEach((doc) => {
-					fetchedListings.push(doc.data());
+		if (isLoggedIn) {
+			const docRef = doc(firestore, "users", user.uid);
+			getDoc(docRef)
+				.then((doc) => {
+					if (doc.exists()) {
+						setListings(doc.data().subscriptions);
+					}
+				})
+				.catch((err) => console.log(err));
+		} else {
+			getDocs(collection(firestore, "queries"))
+				.then((querySnapshot) => {
+					let i = 0;
+					const fetchedListings = [];
+					querySnapshot.forEach((doc) => {
+						if (i < 5) {
+							fetchedListings.push(doc.data().query);
+							i++;
+						} else {
+							setListings(fetchedListings);
+							return;
+						}
+					});
+				})
+				.catch((error) => {
+					console.error(error);
 				});
-				setListings(fetchedListings);
-			})
-			.catch((error) => {
-				console.error(error);
-			});
-	}, []);
+		}
+	}, [isLoggedIn, user]);
+
+	console.log(user, isLoggedIn);
 
 	return (
 		<main className='App'>
@@ -124,7 +154,7 @@ function App() {
 			/>
 			<SearchBar handlePostQuery={handlePostQuery} />
 			{!isLoggedIn ? <Disclaimer /> : null}
-			<ListingContainer listings={listings} />
+			<ListingContainer listings={listings} isLoggedIn={isLoggedIn} />
 		</main>
 	);
 }

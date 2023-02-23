@@ -17,6 +17,8 @@ const openai = new OpenAIApi(configuration);
 const cheerio = require("cheerio");
 const axios = require("axios");
 
+// functions functions functions
+
 async function sendEmail(query, text) {
 	let emails = [];
 
@@ -51,7 +53,6 @@ async function currentDate() {
 	return dateString;
 }
 
-// getting inner html
 async function getInnerText(query) {
 	try {
 		const response = await axios.get(
@@ -85,31 +86,8 @@ async function removeSubscription(uid, text) {
 	});
 }
 
-// async function scrape(query) {
-// 	try {
-// 		const browser = await puppeteer.launch();
-// 		const page = await browser.newPage();
+// exports exports exports
 
-// 		await page.goto(
-// 			`https://www.facebook.com/marketplace/vancouver/search/?query=${query}`,
-// 			{
-// 				waitUntil: "networkidle2",
-// 			}
-// 		);
-
-// 		await page.waitForTimeout(2000);
-
-// 		const listings = await page.evaluate(async () => {
-// 			return document.querySelector('[role="main"]').innerText;
-// 		});
-
-// 		await browser.close();
-
-// 		return listings;
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// }
 exports.removeQuery = functions.https.onCall(async (data, context) => {
 	// Message text passed from the client.
 	const text = data.text;
@@ -118,7 +96,6 @@ exports.removeQuery = functions.https.onCall(async (data, context) => {
 	const email = context.auth.token.email;
 
 	if (uid !== null && email !== null) {
-
 		removeSubscription(uid, text);
 
 		return true;
@@ -141,11 +118,9 @@ exports.postQuery = functions.https.onCall(async (data, context) => {
 			await db.collection("queries").add({
 				query: text,
 			});
-
-			addSubscription(uid, text);
-
-			return true;
 		}
+		addSubscription(uid, text);
+		return true;
 	}
 	return false;
 });
@@ -153,7 +128,7 @@ exports.postQuery = functions.https.onCall(async (data, context) => {
 // ----------------------------------------------------------------
 exports.getQueries = functions
 	.runWith({ memory: "4GB" })
-	.pubsub.schedule("20 18 * * 0-6")
+	.pubsub.schedule("0 12 * * 0-6")
 	.onRun(async () => {
 		try {
 			const queryRef = db.collection("queries");
