@@ -5,6 +5,9 @@ import SearchBar from "./Search/SearchBarComponent";
 import ListingContainer from "./ListingsContainer/ListingsContainerComponent";
 import {
 	collection,
+	query,
+	orderBy,
+	limit,
 	getDocs,
 	getFirestore,
 	doc,
@@ -74,11 +77,14 @@ function App() {
 					const userRef = result.user;
 					// The signed-in user info.
 					// IdP data available using getAdditionalUserInfo(result)
-
-					await setDoc(doc(firestore, "users", userRef.uid), {
-						name: userRef.displayName,
-						email: userRef.email,
-						uid: userRef.uid,
+					getDoc(doc(firestore, "users", userRef.uid)).then(async (doc) => {
+						if (!doc.exists()) {
+							await setDoc(doc(firestore, "users", userRef.uid), {
+								name: userRef.displayName,
+								email: userRef.email,
+								uid: userRef.uid,
+							});
+						}
 					});
 				} catch (err) {
 					console.log(err);
@@ -107,7 +113,7 @@ function App() {
 	const [listings, setListings] = useState([]);
 
 	useEffect(() => {
-		if (isLoggedIn) {
+		if (user !== null) {
 			const docRef = doc(firestore, "users", user.uid);
 			getDoc(docRef)
 				.then((doc) => {
@@ -121,25 +127,24 @@ function App() {
 				})
 				.catch((err) => console.log(err));
 		} else {
-			getDocs(collection(firestore, "queries"))
+			const collectionRef = collection(firestore, "queries");
+			const queryRef = query(collectionRef, limit(5));
+
+			getDocs(queryRef)
 				.then((querySnapshot) => {
-					let i = 0;
 					const fetchedListings = [];
+					let i = 0;
 					querySnapshot.forEach((doc) => {
-						if (i < 5) {
-							fetchedListings.push(doc.data().query);
-							i++;
-						} else {
-							setListings(fetchedListings);
-							return;
-						}
+						fetchedListings.push(doc.data().query);
+						i++;
 					});
+					setListings(fetchedListings);
 				})
 				.catch((error) => {
 					console.error(error);
 				});
 		}
-	}, [isLoggedIn, user]);
+	}, [user]);
 
 	return (
 		<main className='App'>

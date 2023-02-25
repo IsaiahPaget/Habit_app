@@ -2,7 +2,7 @@ import React from "react";
 import "./Disclaimer.css";
 function Disclaimer() {
 	return (
-		<section className='disclaimer-container bg-gradient'>
+		<section className='disclaimer-container'>
 			<article className='disclaimer-body'>
 				<header className='disclaimer-header'>Welcome to Price Compass!</header>
 				<p className='disclaimer-paragraph'>

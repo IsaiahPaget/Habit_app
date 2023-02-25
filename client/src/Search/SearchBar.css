@@ -1,9 +1,8 @@
-@import url('../index.css');
+@import url("../index.css");
 
 .searchbar-container {
 	display: flex;
 	padding: 1rem;
-
 }
 .searchbar-input {
 	flex-grow: 1;
@@ -14,8 +13,18 @@
 	padding: 1rem;
 }
 .searchbar-input:focus {
-    outline: none;
+	outline: none;
 }
+
+.loading {
+	background-image: var(--gradient-green);
+	padding: 1rem;
+	color: white;
+	font-size: large;
+	font-weight: 700;
+	width: 100%;
+}
+
 .searchbar-button {
 	padding: 1rem;
 	background-image: var(--gradient-green);

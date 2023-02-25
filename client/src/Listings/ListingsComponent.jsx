@@ -10,16 +10,25 @@ function Listings(props) {
 					<form
 						onSubmit={(e) => {
 							e.preventDefault();
-							handleRemoveQuery(listing);
+							if (!props.loading) {
+								handleRemoveQuery(listing);
+							}
+							props.setLoading(true);
 						}}
 						className='listing-container'
 					>
-						<div className='listing-title'>{listing}</div>
-						{props.isLoggedIn ? (
-							<button className='listing-button'>
-								<i className='fa-solid fa-xmark'></i>
-							</button>
-						) : null }
+						{props.loading ? (
+							<div className='loading'>Loading ...</div>
+						) : (
+							<>
+								<div className='listing-title'>{listing}</div>
+								{props.isLoggedIn ? (
+									<button className='listing-button'>
+										<i className='fa-solid fa-xmark'></i>
+									</button>
+								) : null}
+							</>
+						)}
 					</form>
 				);
 			})}

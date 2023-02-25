@@ -13,6 +13,15 @@
 	font-weight: 700;
 }
 
+.loading {
+	background-image: var(--gradient-green);
+	padding: 1rem;
+	color: white;
+	font-size: large;
+	font-weight: 700;
+	width: 100%;
+}
+
 .listing-button {
 	background-image: var(--gradient-green);
 	border-width: 0px;

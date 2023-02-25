@@ -96,11 +96,8 @@ exports.removeQuery = functions.https.onCall(async (data, context) => {
 	const email = context.auth.token.email;
 
 	if (uid !== null && email !== null) {
-		removeSubscription(uid, text);
-
-		return true;
+		await removeSubscription(uid, text);
 	}
-	return false;
 });
 
 exports.postQuery = functions.https.onCall(async (data, context) => {
@@ -119,10 +116,8 @@ exports.postQuery = functions.https.onCall(async (data, context) => {
 				query: text,
 			});
 		}
-		addSubscription(uid, text);
-		return true;
+		await addSubscription(uid, text);
 	}
-	return false;
 });
 
 // ----------------------------------------------------------------

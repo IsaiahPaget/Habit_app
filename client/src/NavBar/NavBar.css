@@ -1,7 +1,6 @@
 .navbar-container {
 	display: flex;
-	background-color: chartreuse;
-	justify-content: space-between;
+	gap: 1rem;
 	padding: 1rem;
 	align-items: center;
 }
@@ -13,13 +12,11 @@
 	font-weight: 700;
 }
 .logo {
-	align-items: center;
-	display: flex;
-	gap: 1rem;
+	margin-right: auto;
 	font-size: x-large;
 	font-weight: 700;
 	color: #e0e700;
-    height: 100%;
+	height: 100%;
 }
 .log {
 	color: #e0e700;
