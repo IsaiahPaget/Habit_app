@@ -6,7 +6,6 @@ import ListingContainer from "./ListingsContainer/ListingsContainerComponent";
 import {
 	collection,
 	query,
-	orderBy,
 	limit,
 	getDocs,
 	getFirestore,
@@ -77,15 +76,17 @@ function App() {
 					const userRef = result.user;
 					// The signed-in user info.
 					// IdP data available using getAdditionalUserInfo(result)
-					getDoc(doc(firestore, "users", userRef.uid)).then(async (doc) => {
-						if (!doc.exists()) {
-							await setDoc(doc(firestore, "users", userRef.uid), {
-								name: userRef.displayName,
-								email: userRef.email,
-								uid: userRef.uid,
-							});
-						}
-					});
+					const docRef = doc(firestore, "users", userRef.uid);
+					const userDoc = await getDoc(docRef);
+
+					if (!userDoc.exists()) {
+						await setDoc(docRef, {
+							name: userRef.displayName,
+							email: userRef.email,
+							uid: userRef.uid,
+						});
+					}
+					setLogin(true)
 				} catch (err) {
 					console.log(err);
 				}
